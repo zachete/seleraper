@@ -1,2 +1,5 @@
 # seleraper
-Tiny js CLI tool for searching HTML selectors on the entire site
+
+Tiny JS CLI tool for searching HTML selectors on the entire site
+
+# Coming Soon

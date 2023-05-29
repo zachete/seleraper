@@ -1,0 +1,26 @@
+{
+  "name": "eapps-search",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/main.js",
+  "scripts": {
+    "run": "npx tsc && node build/main.js --url=https://www.expat-u.com/  --selector=div"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.4",
+    "chalk": "^5.2.0",
+    "lodash": "^4.17.21",
+    "puppeteer": "^19.11.1"
+  },
+  "devDependencies": {
+    "@types/async": "^3.2.18",
+    "@types/chalk": "^2.2.0",
+    "@types/lodash": "^4.14.195",
+    "@types/node": "^18.15.11",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.4"
+  }
+}
