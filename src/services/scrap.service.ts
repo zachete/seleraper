@@ -1,5 +1,5 @@
 import { Browser } from 'puppeteer';
-import _ from 'lodash';
+import uniq from 'lodash/uniq.js';
 import { OutputService } from './output.service.js';
 import { prepareUrl } from '../utils/prepare-url.js';
 
@@ -29,8 +29,8 @@ export class ScrapService {
     this.scrapExcludes.push(url);
 
     const page = await this.browser.newPage();
-    await page.goto(url);
-    await page.waitForSelector('body > div');
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('body');
     const links = await page.$$eval('a', (items) => {
       return items.map((item) => item.href);
     });
@@ -43,31 +43,36 @@ export class ScrapService {
       this.outputService.printGray('CHECKED', url);
     }
 
-    const uniqueLinks = _.uniq(links);
-    const processedLinks = this.filterLinks(uniqueLinks);
+    const processedLinks = this.processLinks(links) || [];
+
     processedLinks.map((item) => {
+      console.log(item);
       next(item);
     });
   }
 
-  filterLinks(links: string[]) {
-    return links.filter((item) => {
-      if (!item) {
-        return;
-      }
+  processLinks(links: string[]) {
+    return uniq(links)
+      .map((item) => prepareUrl(item))
+      .filter((item) => {
+        const url = prepareUrl(item);
 
-      if (item.startsWith('tel:') || item.startsWith('mailto:')) {
-        return;
-      }
+        if (!url) {
+          return;
+        }
 
-      const hostname = new URL(item).hostname;
+        if (url.startsWith('tel:') || url.startsWith('mailto:')) {
+          return;
+        }
 
-      if (hostname && hostname !== this.hostname) {
-        return;
-      }
+        const hostname = new URL(url).hostname;
 
-      return true;
-    });
+        if (hostname && hostname !== this.hostname) {
+          return;
+        }
+
+        return true;
+      });
   }
 }
 

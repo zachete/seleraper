@@ -18,11 +18,13 @@ const main = async () => {
         queue.push(nextUrl);
       },
     });
-
+    console.log('completed', completed);
     completed();
   }, 4);
 
-  queue.push(args.values.url);
+  queue.push(args.values.url, (error) => {
+    console.error('Error', error);
+  });
 };
 
 main();
