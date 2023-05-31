@@ -6,8 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import chalk from 'chalk';
 import { injectable } from 'inversify';
-import 'reflect-metadata';
-let OutputService = class OutputService {
+export class OutputService {
+}
+let DefaultOutputService = class DefaultOutputService {
     printGreen(coloredMessage, otherMessage) {
         console.log(chalk.bgGreen(coloredMessage), otherMessage);
     }
@@ -15,7 +16,7 @@ let OutputService = class OutputService {
         console.log(chalk.bgGray(coloredMessage), otherMessage);
     }
 };
-OutputService = __decorate([
+DefaultOutputService = __decorate([
     injectable()
-], OutputService);
-export { OutputService };
+], DefaultOutputService);
+export { DefaultOutputService };

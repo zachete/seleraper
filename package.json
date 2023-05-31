@@ -1,22 +1,28 @@
 {
-  "name": "eapps-search",
+  "name": "serper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Tiny JS CLI tool that check specified HTML tag on entier website",
   "main": "build/main.js",
+  "bin": {
+    "serper": "build/main.js"
+  },
   "scripts": {
-    "run": "npx tsc && node build/main.js --url=https://www.expat-u.com/  --selector=div"
+    "run": "npx tsc && node build/main.js --url=https://www.urallawoolroom.com.au/  --selector='div[class^=elfsight-app]'",
+    "build": "npx tsc"
   },
   "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^3.2.4",
+    "better-queue": "^3.8.12",
     "chalk": "^5.2.0",
+    "inversify": "^6.0.1",
     "lodash": "^4.17.21",
-    "puppeteer": "^19.11.1"
+    "puppeteer": "^19.11.1",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@types/async": "^3.2.18",
+    "@types/better-queue": "^3.8.3",
     "@types/chalk": "^2.2.0",
     "@types/lodash": "^4.14.195",
     "@types/node": "^18.15.11",

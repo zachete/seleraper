@@ -1,4 +1,5 @@
 import { parseArgs } from 'util';
+// TODO: Wrap into a service
 const DEFAULT_URL = 'https://example.com';
 const DEFAULT_SELECTOR = 'p';
 export class ArgsService {

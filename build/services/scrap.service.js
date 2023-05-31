@@ -1,12 +1,13 @@
 import _ from 'lodash';
-import { OutputService } from './output.service.js';
 import { prepareUrl } from '../utils/prepare-url.js';
+import container from '../inversify.config.js';
+import { TYPES } from '../types.js';
 export class ScrapService {
     constructor(browser) {
         this.scrapExcludes = [];
         this.hostname = null;
         this.browser = browser;
-        this.outputService = new OutputService();
+        this.outputService = container.get(TYPES.OutputService);
     }
     async run({ url: rawUrl, selector, next }) {
         const url = prepareUrl(rawUrl);
@@ -19,8 +20,8 @@ export class ScrapService {
         }
         this.scrapExcludes.push(url);
         const page = await this.browser.newPage();
-        await page.goto(url);
-        await page.waitForSelector('body > div');
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        await page.waitForSelector('body');
         const links = await page.$$eval('a', (items) => {
             return items.map((item) => item.href);
         });
@@ -31,25 +32,25 @@ export class ScrapService {
         else {
             this.outputService.printGray('CHECKED', url);
         }
-        const uniqueLinks = _.uniq(links);
-        const processedLinks = this.filterLinks(uniqueLinks);
-        processedLinks.map((item) => {
-            next(item);
-        });
+        const processedLinks = this.processLinks(links) || [];
+        processedLinks.map((item) => next(item));
     }
-    filterLinks(links) {
-        return links.filter((item) => {
-            if (!item) {
+    processLinks(links) {
+        return _.uniq(links
+            .map((item) => prepareUrl(item))
+            .filter((item) => {
+            const url = prepareUrl(item);
+            if (!url) {
                 return;
             }
-            if (item.startsWith('tel:') || item.startsWith('mailto:')) {
+            if (url.startsWith('tel:') || url.startsWith('mailto:')) {
                 return;
             }
-            const hostname = new URL(item).hostname;
+            const hostname = new URL(url).hostname;
             if (hostname && hostname !== this.hostname) {
                 return;
             }
             return true;
-        });
+        }));
     }
 }

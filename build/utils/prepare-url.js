@@ -1,3 +1,3 @@
 export const prepareUrl = (url) => {
-    return url.replace('www.', '');
+    return url.replace('www.', '').replace(/#(.*)/, '');
 };

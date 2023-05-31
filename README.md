@@ -1,5 +1,5 @@
-# seleraper
+# Serper
 
-Tiny JS CLI tool for searching HTML selectors on the entire site
+Tiny JS CLI tool that check specified HTML tag on entier website.
 
 # Coming Soon
