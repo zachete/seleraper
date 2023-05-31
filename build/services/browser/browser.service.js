@@ -9,7 +9,7 @@ import puppeteer from 'puppeteer';
 export class BrowserService {
 }
 let DefaultBrowserService = class DefaultBrowserService {
-    async createBrowser() {
+    async getBrowser() {
         if (!this.browser) {
             this.browser = await puppeteer.launch({
                 args: ['--disable-setuid-sandbox'],

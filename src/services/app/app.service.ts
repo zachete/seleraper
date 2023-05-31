@@ -16,8 +16,6 @@ export class DefaultAppService implements AppService {
   constructor(@inject(TYPES.ScrapService) private scrapService: ScrapService) {}
 
   async start() {
-    await this.scrapService.init();
-
     const q = new Queue(
       async (url: string, cb: (error: unknown, result: unknown) => void) => {
         await this.scrapService.run({

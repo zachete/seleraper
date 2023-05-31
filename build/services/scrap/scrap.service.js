@@ -14,7 +14,7 @@ import _ from 'lodash';
 import { inject, injectable } from 'inversify';
 import { prepareUrl } from '../../utils/prepare-url.js';
 import { BrowserService } from '../browser/browser.service.js';
-import { TYPES } from '../..//types.js';
+import { TYPES } from '../../types.js';
 import { OutputService } from '../output/output.service.js';
 export class ScrapService {
 }
@@ -25,11 +25,9 @@ let DefaultScrapService = class DefaultScrapService {
         this.scrapExcludes = [];
         this.hostname = null;
     }
-    async init() {
-        this.browser = await this.browserService.createBrowser();
-    }
     async run({ url: rawUrl, selector, next }) {
         const url = prepareUrl(rawUrl);
+        const browser = await this.browserService.getBrowser();
         if (!this.hostname) {
             const urlObj = new URL(url);
             this.hostname = urlObj.hostname;
@@ -38,7 +36,7 @@ let DefaultScrapService = class DefaultScrapService {
             return;
         }
         this.scrapExcludes.push(url);
-        const page = await this.browser.newPage();
+        const page = await browser.newPage();
         await page.goto(url, { waitUntil: 'networkidle0' });
         await page.waitForSelector('body');
         const links = await page.$$eval('a', (items) => {

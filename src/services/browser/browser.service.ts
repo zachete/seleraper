@@ -2,14 +2,14 @@ import { injectable } from 'inversify';
 import puppeteer, { Browser } from 'puppeteer';
 
 export abstract class BrowserService {
-  abstract createBrowser(): Promise<Browser>;
+  abstract getBrowser(): Promise<Browser>;
 }
 
 @injectable()
 export class DefaultBrowserService implements BrowserService {
   private browser: Browser;
 
-  async createBrowser() {
+  async getBrowser() {
     if (!this.browser) {
       this.browser = await puppeteer.launch({
         args: ['--disable-setuid-sandbox'],

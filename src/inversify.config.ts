@@ -19,7 +19,13 @@ const container = new Container();
 
 container.bind<AppService>(TYPES.AppService).to(DefaultAppService);
 container.bind<ScrapService>(TYPES.ScrapService).to(DefaultScrapService);
-container.bind<BrowserService>(TYPES.BrowserService).to(DefaultBrowserService);
-container.bind<OutputService>(TYPES.OutputService).to(DefaultOutputService);
+container
+  .bind<BrowserService>(TYPES.BrowserService)
+  .to(DefaultBrowserService)
+  .inSingletonScope();
+container
+  .bind<OutputService>(TYPES.OutputService)
+  .to(DefaultOutputService)
+  .inSingletonScope();
 
 export default container;

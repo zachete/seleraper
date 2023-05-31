@@ -24,7 +24,6 @@ let DefaultAppService = class DefaultAppService {
         this.scrapService = scrapService;
     }
     async start() {
-        await this.scrapService.init();
         const q = new Queue(async (url, cb) => {
             await this.scrapService.run({
                 url,

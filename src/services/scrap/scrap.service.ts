@@ -1,14 +1,12 @@
-import { Browser } from 'puppeteer';
 import _ from 'lodash';
 import { inject, injectable } from 'inversify';
 import { prepareUrl } from '../../utils/prepare-url.js';
 import { BrowserService } from '../browser/browser.service.js';
-import { TYPES } from '../..//types.js';
+import { TYPES } from '../../types.js';
 import { OutputService } from '../output/output.service.js';
 
 export abstract class ScrapService {
   abstract run(options: RunOptions): Promise<void>;
-  abstract init(): Promise<void>;
 }
 
 export interface RunOptions {
@@ -19,7 +17,6 @@ export interface RunOptions {
 
 @injectable()
 export class DefaultScrapService implements ScrapService {
-  private browser: Browser;
   private scrapExcludes: string[] = [];
   private hostname: string = null;
 
@@ -28,12 +25,9 @@ export class DefaultScrapService implements ScrapService {
     @inject(TYPES.OutputService) private outputService: OutputService
   ) {}
 
-  async init() {
-    this.browser = await this.browserService.createBrowser();
-  }
-
   async run({ url: rawUrl, selector, next }: RunOptions) {
     const url = prepareUrl(rawUrl);
+    const browser = await this.browserService.getBrowser();
 
     if (!this.hostname) {
       const urlObj = new URL(url);
@@ -46,7 +40,7 @@ export class DefaultScrapService implements ScrapService {
 
     this.scrapExcludes.push(url);
 
-    const page = await this.browser.newPage();
+    const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle0' });
     await page.waitForSelector('body');
     const links = await page.$$eval('a', (items) => {

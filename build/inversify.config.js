@@ -8,6 +8,12 @@ import { DefaultBrowserService, } from './services/browser/browser.service.js';
 const container = new Container();
 container.bind(TYPES.AppService).to(DefaultAppService);
 container.bind(TYPES.ScrapService).to(DefaultScrapService);
-container.bind(TYPES.BrowserService).to(DefaultBrowserService);
-container.bind(TYPES.OutputService).to(DefaultOutputService);
+container
+    .bind(TYPES.BrowserService)
+    .to(DefaultBrowserService)
+    .inSingletonScope();
+container
+    .bind(TYPES.OutputService)
+    .to(DefaultOutputService)
+    .inSingletonScope();
 export default container;
