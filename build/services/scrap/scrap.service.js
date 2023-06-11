@@ -12,20 +12,19 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import _ from 'lodash';
 import { inject, injectable } from 'inversify';
-import { prepareUrl } from '../../utils/prepare-url.js';
-import { BrowserService } from '../browser/browser.service.js';
 import { TYPES } from '../../types.js';
-import { OutputService } from '../output/output.service.js';
+import { prepareUrl } from '../../utils/prepare-url.js';
+import { BrowserService } from '../../services/browser/browser.service.js';
 export class ScrapService {
 }
 let DefaultScrapService = class DefaultScrapService {
-    constructor(browserService, outputService) {
+    constructor(browserService) {
         this.browserService = browserService;
-        this.outputService = outputService;
         this.scrapExcludes = [];
         this.hostname = null;
+        this.urls = [];
     }
-    async run({ url: rawUrl, selector, next }) {
+    async scrapLinks({ url: rawUrl }) {
         const url = prepareUrl(rawUrl);
         const browser = await this.browserService.getBrowser();
         if (!this.hostname) {
@@ -42,17 +41,27 @@ let DefaultScrapService = class DefaultScrapService {
         const links = await page.$$eval('a', (items) => {
             return items.map((item) => item.href);
         });
-        const hasSelector = await page.$$eval(selector, (items) => items.length);
-        if (hasSelector) {
-            this.outputService.printGreen('FOUNDED', url);
-        }
-        else {
-            this.outputService.printGray('CHECKED', url);
-        }
+        await page.close();
+        links.push(url);
         const processedLinks = this.processLinks(links) || [];
-        processedLinks.map((item) => next(item));
+        const result = _.difference(processedLinks, this.urls);
+        this.urls = this.urls.concat(result);
+        return {
+            chunk: result,
+            full: this.urls,
+        };
+    }
+    async findSelector({ url, selector }) {
+        const browser = await this.browserService.getBrowser();
+        const page = await browser.newPage();
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        await page.waitForSelector('body');
+        const result = !!(await page.$$eval(selector, (items) => items.length));
+        await page.close();
+        return result;
     }
     processLinks(links) {
+        // TODO: need refactor
         return _.uniq(links
             .map((item) => prepareUrl(item))
             .filter((item) => {
@@ -74,8 +83,6 @@ let DefaultScrapService = class DefaultScrapService {
 DefaultScrapService = __decorate([
     injectable(),
     __param(0, inject(TYPES.BrowserService)),
-    __param(1, inject(TYPES.OutputService)),
-    __metadata("design:paramtypes", [BrowserService,
-        OutputService])
+    __metadata("design:paramtypes", [BrowserService])
 ], DefaultScrapService);
 export { DefaultScrapService };

@@ -1,11 +1,11 @@
-import container from './inversify.config.js';
-import { AppService } from './services/app/app.service';
-import { TYPES } from './types.js';
+import container from 'container.js';
+import { TYPES } from 'types.js';
+import { MainController } from 'controllers/main.controller.js';
 
-const main = async () => {
-  const appService = container.get<AppService>(TYPES.AppService);
+export const main = async () => {
+  const mainController = container.get<MainController>(TYPES.MainController);
 
-  await appService.start();
+  await mainController.start();
 };
 
 main();

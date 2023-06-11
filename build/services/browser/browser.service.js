@@ -12,12 +12,18 @@ let DefaultBrowserService = class DefaultBrowserService {
     async getBrowser() {
         if (!this.browser) {
             this.browser = await puppeteer.launch({
+                headless: 'new',
                 args: ['--disable-setuid-sandbox'],
-                // TODO: make this param optional
                 ignoreHTTPSErrors: true,
             });
         }
         return this.browser;
+    }
+    async closeBrowser() {
+        if (!this.browser) {
+            return;
+        }
+        await this.browser.close();
     }
 };
 DefaultBrowserService = __decorate([

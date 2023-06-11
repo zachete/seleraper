@@ -1,14 +1,14 @@
 {
   "name": "serper",
-  "version": "1.0.0",
-  "description": "Tiny JS CLI tool that check specified HTML tag on entier website",
+  "version": "1.1.0",
+  "description": "JS CLI tool-scrapper that check specified HTML tag exsistence on entier website",
   "main": "build/main.js",
   "bin": {
-    "serper": "build/main.js"
+    "serper": "./bin/main.js"
   },
   "scripts": {
-    "run": "npx tsc && node build/main.js --url=https://www.urallawoolroom.com.au/  --selector='div[class^=elfsight-app]'",
-    "build": "npx tsc"
+    "start": "npx tsc && tsc-alias && node build/entries/main.js",
+    "build": "npx tsc && tsc-alias"
   },
   "type": "module",
   "author": "",
@@ -18,6 +18,8 @@
     "chalk": "^5.2.0",
     "inversify": "^6.0.1",
     "lodash": "^4.17.21",
+    "ora": "^6.3.1",
+    "p-queue": "^7.3.4",
     "puppeteer": "^19.11.1",
     "reflect-metadata": "^0.1.13"
   },
@@ -27,6 +29,7 @@
     "@types/lodash": "^4.14.195",
     "@types/node": "^18.15.11",
     "prettier": "^2.8.7",
+    "tsc-alias": "^1.8.6",
     "typescript": "^5.0.4"
   }
 }
