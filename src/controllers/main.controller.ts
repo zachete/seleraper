@@ -22,6 +22,7 @@ export class MainController implements Controller {
   ) {}
 
   async start() {
+    // TODO: maybe split parallel logic to seperate controllers
     if (cluster.isPrimary) {
       this.handleSearch();
     } else {
