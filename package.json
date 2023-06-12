@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "npx tsc && tsc-alias && node build/main.js",
-    "build": "npx tsc && tsc-alias"
+    "build": "rm -rf ./build && npx tsc && tsc-alias"
   },
   "type": "module",
   "author": "",

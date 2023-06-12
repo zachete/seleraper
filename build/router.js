@@ -23,6 +23,7 @@ let Router = class Router {
         this.argsService = argsService;
     }
     start() {
+        // TODO: add help section
         if (cluster.isPrimary) {
             this.searchTagController.start();
         }
