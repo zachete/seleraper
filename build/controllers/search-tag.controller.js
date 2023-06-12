@@ -10,44 +10,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+import cluster from 'cluster';
 import { inject, injectable } from 'inversify';
 import PQueue from 'p-queue';
-import Queue from 'better-queue';
-import cluster from 'cluster';
 import { TYPES } from '../types.js';
 import { ArgsService } from '../services/args/args.service.js';
-import { ScrapService } from '../services/scrap/scrap.service.js';
-import { OutputService } from '../services/output/output.service.js';
 import { BrowserService } from '../services/browser/browser.service.js';
-export class Controller {
-}
-let MainController = class MainController {
+import { OutputService } from '../services/output/output.service.js';
+import { ScrapService } from '../services/scrap/scrap.service.js';
+let SearchTagController = class SearchTagController {
     constructor(scrapService, argsService, outputService, browserService) {
         this.scrapService = scrapService;
         this.argsService = argsService;
         this.outputService = outputService;
         this.browserService = browserService;
     }
-    async start() {
-        // TODO: maybe split parallel logic to seperate controllers
-        if (cluster.isPrimary) {
-            this.handleSearch();
-        }
-        else {
-            this.handleLinksScrapper();
-        }
-        process.on('SIGINT', async () => {
-            await this.browserService.closeBrowser();
-            this.exit();
-        });
-    }
-    handleSearch() {
+    start() {
         this.outputService.showSpinner('Preparing');
         const pQueue = new PQueue({ concurrency: 1 });
         let pageNumber = 1;
         pQueue.on('empty', () => {
             this.outputService.printGray('ENDING', 'Pages queue is empty.');
-            this.exit();
+            process.exit();
         });
         cluster.fork().on('message', (message) => {
             if (message.type === 'chunk') {
@@ -70,35 +54,13 @@ let MainController = class MainController {
                 });
             }
         });
-    }
-    handleLinksScrapper() {
-        const queue = new Queue(async (url, cb) => {
-            const result = await this.scrapService.scrapLinks({
-                url,
-            });
-            if (result) {
-                const { chunk, full } = result;
-                process.send({
-                    type: 'chunk',
-                    data: {
-                        chunk,
-                        full,
-                    },
-                });
-                chunk.map((url) => queue.push(url));
-            }
-            cb(null, true);
-        }, {
-            concurrent: 8,
+        process.on('SIGINT', async () => {
+            await this.browserService.closeBrowser();
+            process.exit();
         });
-        const entryUrl = this.argsService.getArg('url');
-        queue.push(entryUrl);
-    }
-    exit() {
-        process.exit();
     }
 };
-MainController = __decorate([
+SearchTagController = __decorate([
     injectable(),
     __param(0, inject(TYPES.ScrapService)),
     __param(1, inject(TYPES.ArgsService)),
@@ -108,5 +70,5 @@ MainController = __decorate([
         ArgsService,
         OutputService,
         BrowserService])
-], MainController);
-export { MainController };
+], SearchTagController);
+export { SearchTagController };

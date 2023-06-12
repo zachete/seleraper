@@ -61,7 +61,7 @@ let DefaultScrapService = class DefaultScrapService {
         return result;
     }
     processLinks(links) {
-        // TODO: need refactor
+        // TODO: check for refactor
         return _.uniq(links
             .map((item) => prepareUrl(item))
             .filter((item) => {

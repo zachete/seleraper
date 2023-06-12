@@ -1,19 +1,15 @@
+import cluster from 'cluster';
 import { inject, injectable } from 'inversify';
 import PQueue from 'p-queue';
-import Queue from 'better-queue';
-import cluster from 'cluster';
 import { TYPES } from 'types.js';
 import { ArgsService } from 'services/args/args.service.js';
-import { ScrapService } from 'services/scrap/scrap.service.js';
-import { OutputService } from 'services/output/output.service.js';
 import { BrowserService } from 'services/browser/browser.service.js';
-
-export abstract class Controller {
-  abstract start(): void;
-}
+import { OutputService } from 'services/output/output.service.js';
+import { ScrapService } from 'services/scrap/scrap.service.js';
+import { Controller } from './controller.js';
 
 @injectable()
-export class MainController implements Controller {
+export class SearchTagController implements Controller {
   constructor(
     @inject(TYPES.ScrapService) private scrapService: ScrapService,
     @inject(TYPES.ArgsService) private argsService: ArgsService,
@@ -21,21 +17,7 @@ export class MainController implements Controller {
     @inject(TYPES.BrowserService) private browserService: BrowserService
   ) {}
 
-  async start() {
-    // TODO: maybe split parallel logic to seperate controllers
-    if (cluster.isPrimary) {
-      this.handleSearch();
-    } else {
-      this.handleLinksScrapper();
-    }
-
-    process.on('SIGINT', async () => {
-      await this.browserService.closeBrowser();
-      this.exit();
-    });
-  }
-
-  private handleSearch() {
+  start() {
     this.outputService.showSpinner('Preparing');
 
     const pQueue = new PQueue({ concurrency: 1 });
@@ -43,7 +25,7 @@ export class MainController implements Controller {
 
     pQueue.on('empty', () => {
       this.outputService.printGray('ENDING', 'Pages queue is empty.');
-      this.exit();
+      process.exit();
     });
 
     cluster.fork().on('message', (message) => {
@@ -72,41 +54,10 @@ export class MainController implements Controller {
         });
       }
     });
-  }
 
-  private handleLinksScrapper() {
-    const queue = new Queue(
-      async (url: string, cb: (error: unknown, result: unknown) => void) => {
-        const result = await this.scrapService.scrapLinks({
-          url,
-        });
-
-        if (result) {
-          const { chunk, full } = result;
-
-          process.send({
-            type: 'chunk',
-            data: {
-              chunk,
-              full,
-            },
-          });
-
-          chunk.map((url) => queue.push(url));
-        }
-
-        cb(null, true);
-      },
-      {
-        concurrent: 8,
-      }
-    );
-
-    const entryUrl = this.argsService.getArg('url') as string;
-    queue.push(entryUrl);
-  }
-
-  private exit() {
-    process.exit();
+    process.on('SIGINT', async () => {
+      await this.browserService.closeBrowser();
+      process.exit();
+    });
   }
 }

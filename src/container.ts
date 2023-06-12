@@ -1,7 +1,7 @@
+import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from 'types.js';
-import 'reflect-metadata';
-import { MainController } from 'controllers/main.controller.js';
+import { Router } from 'router.js';
 import {
   OutputService,
   DefaultOutputService,
@@ -15,13 +15,18 @@ import {
   DefaultBrowserService,
 } from 'services/browser/browser.service.js';
 import { ArgsService, DefaultArgsService } from 'services/args/args.service.js';
+import { SearchTagController } from 'controllers/search-tag.controller.js';
+import { ScrapLinksController } from 'controllers/scrap-links.controller.js';
 
 const container = new Container();
 
+container.bind<Router>(TYPES.Router).to(Router);
 container
-  .bind<MainController>(TYPES.MainController)
-  .to(MainController)
-  .inSingletonScope();
+  .bind<SearchTagController>(TYPES.SearchTagController)
+  .to(SearchTagController);
+container
+  .bind<ScrapLinksController>(TYPES.ScrapLinksController)
+  .to(ScrapLinksController);
 container
   .bind<ArgsService>(TYPES.ArgsService)
   .to(DefaultArgsService)
@@ -36,4 +41,4 @@ container
   .to(DefaultOutputService)
   .inSingletonScope();
 
-export default container;
+export { container };

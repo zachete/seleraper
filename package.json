@@ -7,7 +7,7 @@
     "serper": "./bin/main.js"
   },
   "scripts": {
-    "start": "npx tsc && tsc-alias && node build/entries/main.js",
+    "start": "npx tsc && tsc-alias && node build/main.js",
     "build": "npx tsc && tsc-alias"
   },
   "type": "module",

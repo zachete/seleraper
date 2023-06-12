@@ -11,67 +11,20 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { inject, injectable } from 'inversify';
-import PQueue from 'p-queue';
 import Queue from 'better-queue';
-import cluster from 'cluster';
 import { TYPES } from '../types.js';
 import { ArgsService } from '../services/args/args.service.js';
-import { ScrapService } from '../services/scrap/scrap.service.js';
-import { OutputService } from '../services/output/output.service.js';
 import { BrowserService } from '../services/browser/browser.service.js';
-export class Controller {
-}
-let MainController = class MainController {
+import { OutputService } from '../services/output/output.service.js';
+import { ScrapService } from '../services/scrap/scrap.service.js';
+let ScrapLinksController = class ScrapLinksController {
     constructor(scrapService, argsService, outputService, browserService) {
         this.scrapService = scrapService;
         this.argsService = argsService;
         this.outputService = outputService;
         this.browserService = browserService;
     }
-    async start() {
-        // TODO: maybe split parallel logic to seperate controllers
-        if (cluster.isPrimary) {
-            this.handleSearch();
-        }
-        else {
-            this.handleLinksScrapper();
-        }
-        process.on('SIGINT', async () => {
-            await this.browserService.closeBrowser();
-            this.exit();
-        });
-    }
-    handleSearch() {
-        this.outputService.showSpinner('Preparing');
-        const pQueue = new PQueue({ concurrency: 1 });
-        let pageNumber = 1;
-        pQueue.on('empty', () => {
-            this.outputService.printGray('ENDING', 'Pages queue is empty.');
-            this.exit();
-        });
-        cluster.fork().on('message', (message) => {
-            if (message.type === 'chunk') {
-                const { chunk, full } = message.data;
-                chunk.map(async (url) => {
-                    await pQueue.add(async () => {
-                        this.outputService.showSpinner(`Checking page ${pageNumber}/${full.length}`);
-                        const result = await this.scrapService.findSelector({
-                            url,
-                            selector: this.argsService.getArg('selector'),
-                        });
-                        if (result) {
-                            this.outputService.printGreen('FOUNDED', `on ${url}`);
-                        }
-                        else {
-                            this.outputService.printGray('NOT FOUND', `on ${url}`);
-                        }
-                        pageNumber++;
-                    });
-                });
-            }
-        });
-    }
-    handleLinksScrapper() {
+    start() {
         const queue = new Queue(async (url, cb) => {
             const result = await this.scrapService.scrapLinks({
                 url,
@@ -93,12 +46,13 @@ let MainController = class MainController {
         });
         const entryUrl = this.argsService.getArg('url');
         queue.push(entryUrl);
-    }
-    exit() {
-        process.exit();
+        process.on('SIGINT', async () => {
+            await this.browserService.closeBrowser();
+            process.exit();
+        });
     }
 };
-MainController = __decorate([
+ScrapLinksController = __decorate([
     injectable(),
     __param(0, inject(TYPES.ScrapService)),
     __param(1, inject(TYPES.ArgsService)),
@@ -108,5 +62,5 @@ MainController = __decorate([
         ArgsService,
         OutputService,
         BrowserService])
-], MainController);
-export { MainController };
+], ScrapLinksController);
+export { ScrapLinksController };
