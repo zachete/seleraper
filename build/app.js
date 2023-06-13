@@ -16,7 +16,7 @@ import { TYPES } from './types.js';
 import { ScrapLinksController } from './controllers/scrap-links.controller.js';
 import { SearchTagController } from './controllers/search-tag.controller.js';
 import { ArgsService } from './services/args/args.service.js';
-let Router = class Router {
+let App = class App {
     constructor(scrapLinksController, searchTagController, argsService) {
         this.scrapLinksController = scrapLinksController;
         this.searchTagController = searchTagController;
@@ -24,6 +24,10 @@ let Router = class Router {
     }
     start() {
         // TODO: add help section
+        if (this.argsService.getArg('help')) {
+            this.printHelp();
+            return;
+        }
         if (cluster.isPrimary) {
             this.searchTagController.start();
         }
@@ -31,8 +35,15 @@ let Router = class Router {
             this.scrapLinksController.start();
         }
     }
+    printHelp() {
+        console.log(`
+Usage: serper -u <siteUrl> -s <selector>
+-u, --url <siteURL>\tEntry point, from where serper will start scrapping site pages;
+-s, --selector <selector> Query selector to find them. Maybe iframe[src=https://example.com], div[class=example], etc.
+    `);
+    }
 };
-Router = __decorate([
+App = __decorate([
     injectable(),
     __param(0, inject(TYPES.ScrapLinksController)),
     __param(1, inject(TYPES.SearchTagController)),
@@ -40,5 +51,5 @@ Router = __decorate([
     __metadata("design:paramtypes", [ScrapLinksController,
         SearchTagController,
         ArgsService])
-], Router);
-export { Router };
+], App);
+export { App };

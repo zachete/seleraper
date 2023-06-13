@@ -27,6 +27,11 @@ export class DefaultArgsService implements ArgsService {
             short: 's',
             default: DEFAULT_SELECTOR,
           },
+          help: {
+            type: 'boolean',
+            short: 'h',
+            default: false,
+          },
         },
       });
     }

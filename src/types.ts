@@ -1,5 +1,5 @@
 export const TYPES = {
-  Router: Symbol('Router'),
+  App: Symbol('App'),
   ScrapLinksController: Symbol('ScrapLinksController'),
   SearchTagController: Symbol('SearchTagController'),
 

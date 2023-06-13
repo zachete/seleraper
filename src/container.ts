@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from 'types.js';
-import { Router } from 'router.js';
+import { App } from 'app.js';
 import {
   OutputService,
   DefaultOutputService,
@@ -20,7 +20,7 @@ import { ScrapLinksController } from 'controllers/scrap-links.controller.js';
 
 const container = new Container();
 
-container.bind<Router>(TYPES.Router).to(Router);
+container.bind<App>(TYPES.App).to(App);
 container
   .bind<SearchTagController>(TYPES.SearchTagController)
   .to(SearchTagController);

@@ -25,6 +25,11 @@ let DefaultArgsService = class DefaultArgsService {
                         short: 's',
                         default: DEFAULT_SELECTOR,
                     },
+                    help: {
+                        type: 'boolean',
+                        short: 'h',
+                        default: false,
+                    },
                 },
             });
         }

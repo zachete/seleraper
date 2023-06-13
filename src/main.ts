@@ -1,10 +1,10 @@
 import { container } from 'container.js';
 import { TYPES } from 'types.js';
-import { Router } from 'router';
+import { App } from 'app.js';
 
 export const main = async () => {
-  const router = container.get<Router>(TYPES.Router);
-  await router.start();
+  const app = container.get<App>(TYPES.App);
+  app.start();
 };
 
 main();
