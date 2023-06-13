@@ -1,7 +1,7 @@
 {
   "name": "serper",
   "version": "1.1.0",
-  "description": "JS CLI tool-scrapper that check specified HTML tag exsistence on entier website",
+  "description": "JS CLI tool-scrapper that check specified HTML selector exsistence on a website pages",
   "main": "build/main.js",
   "bin": {
     "serper": "./bin/main.js"
@@ -28,6 +28,7 @@
     "@types/chalk": "^2.2.0",
     "@types/lodash": "^4.14.195",
     "@types/node": "^18.15.11",
+    "jest": "^29.5.0",
     "prettier": "^2.8.7",
     "tsc-alias": "^1.8.6",
     "typescript": "^5.0.4"
