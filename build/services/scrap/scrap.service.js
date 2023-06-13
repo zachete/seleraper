@@ -69,7 +69,9 @@ let DefaultScrapService = class DefaultScrapService {
             if (!url) {
                 return;
             }
-            if (url.startsWith('tel:') || url.startsWith('mailto:')) {
+            if (url.startsWith('tel:') ||
+                url.startsWith('mailto:') ||
+                url.startsWith('javascript:void(0)')) {
                 return;
             }
             const hostname = new URL(url).hostname;

@@ -8,6 +8,13 @@ import { OutputService } from 'services/output/output.service.js';
 import { ScrapService } from 'services/scrap/scrap.service.js';
 import { Controller } from './controller.js';
 
+// Time, that controller will wait, if pages queue is empty.
+// Else, exit process.
+const EXIT_TIMEOUT = 20000;
+// For now, the queue concurrency is 1, because higer values
+// starts many browser instances and i'm not sure, that is for positive scrapping performance
+const QUEUE_CONCURRENCY = 1;
+
 @injectable()
 export class SearchTagController implements Controller {
   constructor(
@@ -19,17 +26,27 @@ export class SearchTagController implements Controller {
 
   start() {
     this.outputService.showSpinner('Preparing');
-
-    const pQueue = new PQueue({ concurrency: 1 });
-    let pageNumber = 1;
+    const pQueue = new PQueue({ concurrency: QUEUE_CONCURRENCY });
+    let exitTimeout: NodeJS.Timeout;
 
     pQueue.on('empty', () => {
-      this.outputService.printGray('ENDING', 'Pages queue is empty.');
-      process.exit();
+      exitTimeout = setTimeout(() => {
+        this.outputService.printGray(
+          'ENDING',
+          `Pages queue is empty by ${EXIT_TIMEOUT}.`
+        );
+        process.exit();
+      }, EXIT_TIMEOUT);
     });
+
+    let pageNumber = 1;
 
     cluster.fork().on('message', (message) => {
       if (message.type === 'chunk') {
+        if (exitTimeout) {
+          clearTimeout(exitTimeout);
+        }
+
         const { chunk, full } = message.data;
 
         chunk.map(async (url: string) => {

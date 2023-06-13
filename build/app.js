@@ -23,7 +23,6 @@ let App = class App {
         this.argsService = argsService;
     }
     start() {
-        // TODO: add help section
         if (this.argsService.getArg('help')) {
             this.printHelp();
             return;
