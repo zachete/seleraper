@@ -12,6 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import _ from 'lodash';
 import { inject, injectable } from 'inversify';
+import isUrl from 'is-url';
 import { TYPES } from '../../types.js';
 import { prepareUrl } from '../../utils/prepare-url.js';
 import { BrowserService } from '../../services/browser/browser.service.js';
@@ -36,6 +37,7 @@ let DefaultScrapService = class DefaultScrapService {
         }
         this.scrapExcludes.push(url);
         const page = await browser.newPage();
+        // TODO: catch errors (timeout)
         await page.goto(url, { waitUntil: 'networkidle0' });
         await page.waitForSelector('body');
         const links = await page.$$eval('a', (items) => {
@@ -64,16 +66,8 @@ let DefaultScrapService = class DefaultScrapService {
         // TODO: check for refactor
         return _.uniq(links
             .map((item) => prepareUrl(item))
-            .filter((item) => {
-            const url = prepareUrl(item);
-            if (!url) {
-                return;
-            }
-            if (url.startsWith('tel:') ||
-                url.startsWith('mailto:') ||
-                url.startsWith('javascript:void(0)')) {
-                return;
-            }
+            .filter((item) => isUrl(item))
+            .filter((url) => {
             const hostname = new URL(url).hostname;
             if (hostname && hostname !== this.hostname) {
                 return;

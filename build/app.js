@@ -16,11 +16,13 @@ import { TYPES } from './types.js';
 import { ScrapLinksController } from './controllers/scrap-links.controller.js';
 import { SearchTagController } from './controllers/search-tag.controller.js';
 import { ArgsService } from './services/args/args.service.js';
+import { OutputService } from './services/output/output.service.js';
 let App = class App {
-    constructor(scrapLinksController, searchTagController, argsService) {
+    constructor(scrapLinksController, searchTagController, argsService, outputService) {
         this.scrapLinksController = scrapLinksController;
         this.searchTagController = searchTagController;
         this.argsService = argsService;
+        this.outputService = outputService;
     }
     start() {
         if (this.argsService.getArg('help')) {
@@ -47,8 +49,10 @@ App = __decorate([
     __param(0, inject(TYPES.ScrapLinksController)),
     __param(1, inject(TYPES.SearchTagController)),
     __param(2, inject(TYPES.ArgsService)),
+    __param(3, inject(TYPES.OutputService)),
     __metadata("design:paramtypes", [ScrapLinksController,
         SearchTagController,
-        ArgsService])
+        ArgsService,
+        OutputService])
 ], App);
 export { App };

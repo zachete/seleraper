@@ -32,6 +32,7 @@ let SearchTagController = class SearchTagController {
         this.browserService = browserService;
     }
     start() {
+        this.printStart();
         this.outputService.showSpinner('Preparing');
         const pQueue = new PQueue({ concurrency: QUEUE_CONCURRENCY });
         let exitTimeout;
@@ -70,6 +71,11 @@ let SearchTagController = class SearchTagController {
             await this.browserService.closeBrowser();
             process.exit();
         });
+    }
+    printStart() {
+        const url = this.argsService.getArg('url');
+        const selector = this.argsService.getArg('selector');
+        console.log(`Searching ${selector} on ${url}`);
     }
 };
 SearchTagController = __decorate([

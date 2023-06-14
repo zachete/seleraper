@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import chalk from 'chalk';
 import ora from 'ora';
 import { injectable } from 'inversify';
+// TODO: Refactor to use more flexible way to colorize text
 export class OutputService {
 }
 let DefaultOutputService = class DefaultOutputService {

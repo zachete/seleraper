@@ -25,6 +25,7 @@ export class SearchTagController implements Controller {
   ) {}
 
   start() {
+    this.printStart();
     this.outputService.showSpinner('Preparing');
     const pQueue = new PQueue({ concurrency: QUEUE_CONCURRENCY });
     let exitTimeout: NodeJS.Timeout;
@@ -76,5 +77,12 @@ export class SearchTagController implements Controller {
       await this.browserService.closeBrowser();
       process.exit();
     });
+  }
+
+  private printStart() {
+    const url = this.argsService.getArg('url');
+    const selector = this.argsService.getArg('selector');
+
+    console.log(`Searching ${selector} on ${url}`);
   }
 }

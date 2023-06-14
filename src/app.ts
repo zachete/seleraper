@@ -4,6 +4,7 @@ import { TYPES } from 'types.js';
 import { ScrapLinksController } from 'controllers/scrap-links.controller.js';
 import { SearchTagController } from 'controllers/search-tag.controller.js';
 import { ArgsService } from 'services/args/args.service.js';
+import { OutputService } from 'services/output/output.service.js';
 
 @injectable()
 export class App {
@@ -12,7 +13,8 @@ export class App {
     private scrapLinksController: ScrapLinksController,
     @inject(TYPES.SearchTagController)
     private searchTagController: SearchTagController,
-    @inject(TYPES.ArgsService) private argsService: ArgsService
+    @inject(TYPES.ArgsService) private argsService: ArgsService,
+    @inject(TYPES.OutputService) private outputService: OutputService
   ) {}
 
   start() {

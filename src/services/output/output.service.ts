@@ -2,10 +2,12 @@ import chalk from 'chalk';
 import ora, { Ora } from 'ora';
 import { injectable } from 'inversify';
 
+// TODO: Refactor to use more flexible way to colorize text
+
 export abstract class OutputService {
   abstract printGreen(coloredMessage: string, message: string): void;
-  abstract printGray(coloredMessage: string, message: string): void;
-  abstract printRed(coloredMessage: string, message: string): void;
+  abstract printGray(coloredMessage: string, message?: string): void;
+  abstract printRed(coloredMessage: string, message?: string): void;
   abstract error(message: string): void;
   abstract showSpinner(text: string): void;
   abstract hideSpinner(): void;
@@ -20,7 +22,7 @@ export class DefaultOutputService implements OutputService {
     console.log(chalk.green(coloredMessage), message);
   }
 
-  printGray(coloredMessage: string, message: string) {
+  printGray(coloredMessage: string, message?: string) {
     this.hideSpinner();
     console.log(chalk.grey(coloredMessage), message);
   }
