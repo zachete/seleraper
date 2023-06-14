@@ -77,7 +77,7 @@ export class DefaultScrapService implements ScrapService {
           if (
             url.startsWith('tel:') ||
             url.startsWith('mailto:') ||
-            url.startsWith('javascript:void(0)')
+            url.startsWith('javascript:')
           ) {
             return;
           }
